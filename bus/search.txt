@@ -1,5 +1,6 @@
-fish,4
-taco,7
-Video Games,11
-Anime,3
-Marijuana,4
+onion,111
+garlic,111
+potato,111
+tomato,111
+banana,111
+rice,141
