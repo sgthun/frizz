@@ -1,0 +1,5 @@
+fish,4
+taco,7
+Video Games,11
+Anime,3
+Marijuana,4

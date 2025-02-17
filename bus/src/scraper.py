@@ -1,7 +1,8 @@
 
 import requests
 from bs4 import BeautifulSoup
-
+import os
+import urllib.request
 import logging
 
 class ImageScraper:
@@ -17,11 +18,9 @@ class ImageScraper:
 
 
     def save_images(self, images, directory):
-        import os
-        import urllib.request
-
         if not os.path.exists(directory):
             os.makedirs(directory)
+        
 
         for img_url in images:
             img_name = os.path.join(directory, os.path.basename(img_url))
