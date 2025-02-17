@@ -87,7 +87,7 @@ def main():
                         desired_ext = get_image_extension(image_url)
                         _, current_ext = os.path.splitext(downloaded_file)
                         if current_ext.lower() != desired_ext:
-                            new_file = os.path.join(image_folder, f"downloaded{desired_ext}")
+                            new_file = os.path.join(image_folder, f"{sanitize(search_term)}_{idx+1}{desired_ext}")
                             os.rename(downloaded_file, new_file)
 
                     # Write out the URL file for future checking.

@@ -1,0 +1,7 @@
+# Add your project dependencies here, for example:
+tensorflow>=2.9.0
+numpy
+Pillow
+scikit-learn
+scikit-image
+matplotlib
