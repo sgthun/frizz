@@ -2,6 +2,11 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import logging
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def create_model(architecture="simple", input_shape=(150,150,3), num_classes=10):
     """
@@ -78,5 +83,6 @@ def evaluate_model(model, dataset):
         test_accuracy: The accuracy obtained on the test set.
     """
     results = model.evaluate(dataset, verbose=0)
+    logger.info(f"Test results: {results}")
     test_accuracy = results[1]  # Assuming accuracy is the second metric.
     return test_accuracy
