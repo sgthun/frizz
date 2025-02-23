@@ -19,15 +19,15 @@ image_count = len(list(data_dir.glob('*/*.jpg')))
 print(image_count)
 
 apple = list(data_dir.glob('apple/*'))
-PIL.Image.open(str(apple[0])).show()
+#PIL.Image.open(str(apple[0])).show()
 
-PIL.Image.open(str(apple[1])).show()
+#PIL.Image.open(str(apple[1])).show()
 
 corn = list(data_dir.glob('corn/*'))
-PIL.Image.open(str(corn[0])).show()
+#PIL.Image.open(str(corn[0])).show()
 
 
-PIL.Image.open(str(corn[1])).show()
+#PIL.Image.open(str(corn[1])).show()
 
 batch_size = 32
 img_height = 180
@@ -64,7 +64,7 @@ for images, labels in train_ds.take(1):
     plt.title(class_names[labels[i]])
     plt.axis("off")
 
-plt.show()
+#plt.show()
 
 
 for image_batch, labels_batch in train_ds:  
@@ -109,7 +109,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 model.summary()
-
+"""
 epochs=2
 history = model.fit(
   train_ds,
@@ -144,26 +144,13 @@ plt.show()
 validation_path = pathlib.Path('../library/kaggle/validation').with_suffix('')
 
 
-for food_img_path in validation_path.glob('*/*.jpg'):
-    img = keras.utils.load_img(
-        food_img_path, target_size=(img_height, img_width)
-    )
-    img_array = tf.keras.utils.img_to_array(img)
-    img_array = tf.expand_dims(img_array, 0) # Create a batch
 
-    predictions = model.predict(img_array)
-    score = tf.nn.softmax(predictions[0])
-
-    print(
-        "This image {} most likely belongs to {} with a {:.2f} percent confidence."
-        .format(food_img_path, class_names[np.argmax(score)], 100 * np.max(score))
-    )
 
 print("thank you, have a nice day.")
 
 
-exit(69)
-
+#exit(69)
+"""
 
 data_augmentation = keras.Sequential(
   [
@@ -175,36 +162,6 @@ data_augmentation = keras.Sequential(
     layers.RandomZoom(0.1),
   ]
 )
-
-plt.figure(figsize=(10, 10))
-for images, _ in train_ds.take(1):
-  for i in range(9):
-    augmented_images = data_augmentation(images)
-    ax = plt.subplot(3, 3, i + 1)
-    plt.imshow(augmented_images[0].numpy().astype("uint8"))
-    plt.axis("off")
-
-acc = history.history['accuracy']
-val_acc = history.history['val_accuracy']
-
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-epochs_range = range(epochs)
-
-plt.figure(figsize=(8, 8))
-plt.subplot(1, 2, 1)
-plt.plot(epochs_range, acc, label='Training Accuracy')
-plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-plt.legend(loc='lower right')
-plt.title('Training and Validation Accuracy')
-
-plt.subplot(1, 2, 2)
-plt.plot(epochs_range, loss, label='Training Loss')
-plt.plot(epochs_range, val_loss, label='Validation Loss')
-plt.legend(loc='upper right')
-plt.title('Training and Validation Loss')
-plt.show()
 
 
 model = Sequential([
@@ -230,7 +187,7 @@ model.compile(optimizer='adam',
 model.summary()
 
 
-epochs = 15
+epochs = 100
 history = model.fit(
   train_ds,
   validation_data=val_ds,
@@ -257,26 +214,10 @@ plt.plot(epochs_range, loss, label='Training Loss')
 plt.plot(epochs_range, val_loss, label='Validation Loss')
 plt.legend(loc='upper right')
 plt.title('Training and Validation Loss')
-plt.show()
+#plt.show()
 
+model.save(f"food_model_{epochs}.h5")
 
-
-sunflower_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/592px-Red_sunflower.jpg"
-sunflower_path = tf.keras.utils.get_file('Red_sunflower', origin=sunflower_url)
-
-img = tf.keras.utils.load_img(
-    sunflower_path, target_size=(img_height, img_width)
-)
-img_array = tf.keras.utils.img_to_array(img)
-img_array = tf.expand_dims(img_array, 0) # Create a batch
-
-predictions = model.predict(img_array)
-score = tf.nn.softmax(predictions[0])
-
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score)], 100 * np.max(score))
-)
 
 # Convert the model.
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
@@ -290,10 +231,33 @@ with open(TF_MODEL_FILE_PATH, 'wb') as f:
 interpreter = tf.lite.Interpreter(model_path=TF_MODEL_FILE_PATH)
 interpreter.get_signature_list()
 classify_lite = interpreter.get_signature_runner('serving_default')
-predictions_lite = classify_lite(sequential_1_input=img_array)['outputs']
-score_lite = tf.nn.softmax(predictions_lite)
-print(
-    "This image most likely belongs to {} with a {:.2f} percent confidence."
-    .format(class_names[np.argmax(score_lite)], 100 * np.max(score_lite))
-)
-print(np.max(np.abs(predictions - predictions_lite)))
+
+
+validation_path = pathlib.Path('../library/kaggle/validation').with_suffix('')
+
+prediction_map = {}
+for food_img_path in validation_path.glob('*/*.jpg'):
+    img = keras.utils.load_img(
+        food_img_path, target_size=(img_height, img_width)
+    )
+    img_array = tf.keras.utils.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0) # Create a batch
+
+    predictions = model.predict(img_array)
+    score = tf.nn.softmax(predictions[0])
+
+
+
+    print(
+        "This image {} -> {} @ {:.2f}% confidence."
+        .format(str(food_img_path).split('/')[4], class_names[np.argmax(score)], 100 * np.max(score))
+    )
+    if str(food_img_path).split('/')[4] not in prediction_map:
+        prediction_map[str(food_img_path).split('/')[4]] = {'count': 0, 'correct': 0}
+    if str(food_img_path).split('/')[4] == class_names[np.argmax(score)]:
+        prediction_map[str(food_img_path).split('/')[4]]['correct'] += 1
+    prediction_map[str(food_img_path).split('/')[4]]['count'] += 1
+           
+for key in prediction_map:
+    print(f"{key} -> {prediction_map[key]['correct']} / {prediction_map[key]['count']}")
+
