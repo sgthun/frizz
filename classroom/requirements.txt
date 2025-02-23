@@ -3,5 +3,7 @@ scikit-learn
 scikit-image
 matplotlib
 jupyterlab
+opencv-python
+pandas
 tensorflow>=2.9.0
 
