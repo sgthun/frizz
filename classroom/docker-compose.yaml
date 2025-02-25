@@ -12,5 +12,17 @@ services:
       - ../library/:/data/
     environment:
       JUPYTER_ENABLE_LAB: "yes"
+
+  deckard:
+    build:
+      context: ../magic/deckard
+      dockerfile: Dockerfile
+    container_name: deckard
+    ports:
+      - "9697:3000"
+    volumes:
+      - ../magic/deckard:/app
+      - ../library/:/data/
+
       
 
