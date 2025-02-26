@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  lab:
+    build:
+      context: ./classroom
+      dockerfile: Dockerfile
+    container_name: lab
+    ports:
+      - "9696:8888"
+    volumes:
+      - ./classroom/notebooks:/home/jovyan/work
+      - ./library/:/data/
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+
+  deckard:
+    build:
+      context: ./magic/deckard
+    container_name: deckard
+    ports:
+      - "9697:3000"
+    volumes:
+      - ./magic/deckard:/app
+      - ./library/:/data/
+
+      
+
