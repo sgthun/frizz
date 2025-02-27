@@ -9,7 +9,7 @@ img_width = 180
 show_images = False
 
 
-validation_path = pathlib.Path('../library/kaggle/validation').with_suffix('')
+validation_path = pathlib.Path('../library/kaggle/test').with_suffix('')
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
   validation_path,
