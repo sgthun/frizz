@@ -7,3 +7,10 @@ opencv-python
 pandas
 tensorflow>=2.9.0
 
+
+# For the LLM
+requests
+pyttsx3
+langchain_community
+
+torch
